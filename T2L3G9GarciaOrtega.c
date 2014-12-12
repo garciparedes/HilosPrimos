@@ -85,12 +85,13 @@ int quedanDatos(int *dato){
 
 	if (datosLeidos < Nnumeros){
 		a = 1;
+		pthread_mutex_lock(&datosLeidos_lock);
+		*dato = datosLeidos;
+		datosLeidos++;
+		pthread_mutex_unlock(&datosLeidos_lock);
 	}
 
-	pthread_mutex_lock(&datosLeidos_lock);
-	*dato = datosLeidos;
-	datosLeidos++;
-	pthread_mutex_unlock(&datosLeidos_lock);
+	
 	
 	return a;
 }
@@ -100,7 +101,7 @@ void *consumidor(void* arg2){
 	int idHilo = (int *) arg2;
 	int num, idDato;
 
-	while (quedanDatos(&idDato) == 1){
+	while (quedanDatos(&idDato)){
 
 		//Esperamos en el caso de que no haya datos en el buffer.
 		sem_wait(&hay_datos);

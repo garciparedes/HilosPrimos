@@ -31,14 +31,13 @@ int addInt(char message[]){
 }
 
 int esPrimo(int n){
-	int a =0, i;
-	for(i=1;i<(n+1);i++){  
-
-		if(n%i==0){  
-		a++;  
+	int a = 0, i;
+	for( i = 1; i < (n + 1); i++){  
+		if(n % i == 0){  
+			a++;  
 		}  
 	}  
-	if(a!=2){  
+	if(a != 2){  
 		return 0;  
 	}else{  
 		return 1;
@@ -57,6 +56,23 @@ void sacaNumero(int *value){
 	*value = buffer[out];
 	out = (out + 1) % Tambuffer;
 	pthread_mutex_unlock(&buffer_lock);
+}
+
+int quedanDatos(int *dato){
+	
+	int a = 0;
+
+	if (datosLeidos < Nnumeros){
+		a = 1;
+		pthread_mutex_lock(&datosLeidos_lock);
+		*dato = datosLeidos;
+		datosLeidos++;
+		pthread_mutex_unlock(&datosLeidos_lock);
+	}
+
+	
+	
+	return a;
 }
 
 void *productor(void *arg1){
@@ -79,23 +95,6 @@ void *productor(void *arg1){
 	pthread_exit(NULL);
 }
 
-int quedanDatos(int *dato){
-	
-	int a = 0;
-
-	if (datosLeidos < Nnumeros){
-		a = 1;
-		pthread_mutex_lock(&datosLeidos_lock);
-		*dato = datosLeidos;
-		datosLeidos++;
-		pthread_mutex_unlock(&datosLeidos_lock);
-	}
-
-	
-	
-	return a;
-}
-
 void *consumidor(void* arg2){
 
 	int idHilo = (int *) arg2;
@@ -112,13 +111,9 @@ void *consumidor(void* arg2){
 		sem_post(&hay_sitio);
 
 		printf("%d    %d    %d    %d\n", num, idHilo, esPrimo(num), idDato);
-
 	}
 
 	pthread_exit(NULL);
-
-
-
 }
 
 //
@@ -130,18 +125,24 @@ int main(){
 	char introduceTamBuffer[] = "Introduzca el tamano del buffer: ";
 
 	if ( (Nhilos = addInt(introduceNhilos) ) <= 0) {
-		printf("Error en el numero de hilos.\n");
+		printf("Error: el numero de hilos debe ser mayor que cero.\n");
 		return 1;
 	}
 
 	if ( (Nnumeros = addInt(introduceNnumeros) ) <= 0) {
-		printf("Error en la cantidad de numeros.\n");
+		printf("Error: la cantidad de numeros para analizar debe ser mayor que cero.\n");
 		return 1;
 	}
 
 	if ( (Tambuffer = addInt(introduceTamBuffer) ) <= 0) {
-		printf("Error el tamano del buffer.\n");
+		printf("Error el tamano del buffer debe ser mayor que cero.\n");
 		return 1;
+	}
+
+	if (Tambuffer > (Nnumeros / 2)){
+		printf("Error: el tamano del buffer es demasiado pequeno.\n");
+		return 1;
+
 	}
 
 	if ( (buffer=(int*)malloc(Tambuffer * sizeof(int))) == NULL) {
@@ -166,10 +167,9 @@ int main(){
 
 	//Creacion de los procesos consumidores.
 	int i;
-	for (i = 0 ; i< Nhilos; i++){
+	for (i = 0; i < Nhilos; i++){
 		pthread_create(&consumer[i], NULL, consumidor,(void*) i);
 	}
-
 
 	// Se espera a que los hilos terminen
 	pthread_join(producer, NULL);

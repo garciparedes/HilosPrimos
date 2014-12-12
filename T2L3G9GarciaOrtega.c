@@ -52,12 +52,10 @@ void meteNumero(int value){
 	pthread_mutex_unlock(&buffer_lock);
 }
 
-void sacaNumero(int *value, int *numD){
+void sacaNumero(int *value){
 	pthread_mutex_lock(&buffer_lock);
 	*value = buffer[out];
 	out = (out + 1) % Tambuffer;
-	datosLeidos++;
-	*numD = datosLeidos;
 	pthread_mutex_unlock(&buffer_lock);
 }
 
@@ -81,24 +79,38 @@ void *productor(void *arg1){
 	pthread_exit(NULL);
 }
 
+int quedanDatos(int *dato){
+	
+	int a = 0;
+
+	if (datosLeidos < Nnumeros){
+		a = 1;
+	}
+
+	pthread_mutex_lock(&datosLeidos_lock);
+	*dato = datosLeidos;
+	datosLeidos++;
+	pthread_mutex_unlock(&datosLeidos_lock);
+	
+	return a;
+}
 
 void *consumidor(void* arg2){
 
 	int idHilo = (int *) arg2;
-	int num;
-	int dL;
+	int num, idDato;
 
-	while (datosLeidos != Nnumeros){
+	while (quedanDatos(&idDato) == 1){
 
 		//Esperamos en el caso de que no haya datos en el buffer.
 		sem_wait(&hay_datos);
 
-		sacaNumero(&num, &dL);
+		sacaNumero(&num);
 
-		//Avisamos de que hay un nuevo huevo en el buffer.
+		//Avisamos de que hay un nuevo hueco en el buffer.
 		sem_post(&hay_sitio);
 
-		printf("%d    %d    %d    %d \n",num, idHilo, esPrimo(num), dL);
+		printf("%d    %d    %d    %d\n", num, idHilo, esPrimo(num), idDato);
 
 	}
 

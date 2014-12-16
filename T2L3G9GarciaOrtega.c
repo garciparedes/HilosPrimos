@@ -97,7 +97,7 @@ void *productor(void *arg1){
 
 void *consumidor(void* arg2){
 
-	int idHilo = (int *) arg2;
+	int *idHilo = (int *) arg2;
 	int num, idDato;
 
 	while (quedanDatos(&idDato)){
@@ -110,7 +110,7 @@ void *consumidor(void* arg2){
 		//Avisamos de que hay un nuevo hueco en el buffer.
 		sem_post(&hay_sitio);
 
-		printf("%d    %d    %d    %d\n", num, idHilo, esPrimo(num), idDato);
+		printf("%d    %d    %d    %d\n", num, *idHilo, esPrimo(num), idDato);
 	}
 
 	pthread_exit(NULL);
@@ -167,8 +167,10 @@ int main(){
 
 	//Creacion de los procesos consumidores.
 	int i;
+	int id[Nhilos];
 	for (i = 0; i < Nhilos; i++){
-		pthread_create(&consumer[i], NULL, consumidor,(void*) i);
+		id[i] = i;
+		pthread_create(&consumer[i], NULL, consumidor,(void*) &id[i]);
 	}
 
 	// Se espera a que los hilos terminen

@@ -3,7 +3,7 @@
 
 #include <semaphore.h>
 #include <pthread.h>
-
+#include <string.h>
 //Semaforo mutex para exclusion mutua al acceder al buffer.
 pthread_mutex_t buffer_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t datosLeidos_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -22,13 +22,6 @@ int *buffer;
 int in = 0;
 int out = 0;
 
-// Funcion para introducir desde teclado.
-int addInt(char message[]){
-	printf("%s\n", message);
-	int value;
-	scanf("%d", &value);
-	return value;
-}
 
 int esPrimo(int n){
 	int a = 0, i;
@@ -99,7 +92,7 @@ void *consumidor(void* arg2){
 
 	int *idHilo = (int *) arg2;
 	int num, idDato;
-
+	char primo[3];
 	while (quedanDatos(&idDato)){
 
 		//Esperamos en el caso de que no haya datos en el buffer.
@@ -109,8 +102,13 @@ void *consumidor(void* arg2){
 
 		//Avisamos de que hay un nuevo hueco en el buffer.
 		sem_post(&hay_sitio);
+		if (esPrimo(num)){
+			strcpy(primo, "si");
+		} else{
+			strcpy(primo, "no");
+		}
 
-		printf("%d    %d    %d    %d\n", num, *idHilo, esPrimo(num), idDato);
+		printf("Hilo numero %d : Ha sido consumido el %d valor generado. El numero  %d %s es primo. \n", *idHilo+1, idDato+1,num, primo);
 	}
 
 	pthread_exit(NULL);
@@ -118,29 +116,30 @@ void *consumidor(void* arg2){
 
 //
 // Funcion principal
-int main(){
+int main(int argc, char *argv[]){
 
-	char introduceNhilos[] = "Introduzca la cantidad de hilos: ";
-	char introduceNnumeros[] = "Introduzca la cantidad de numeros: ";
-	char introduceTamBuffer[] = "Introduzca el tamano del buffer: ";
-
-	if ( (Nhilos = addInt(introduceNhilos) ) <= 0) {
+	if(argc != 4){
+		printf("Error: numero de argumentos invalido.\n");
+		return 1;
+	}
+			
+	if ( (Nhilos = atoi(argv[1]) ) <= 0) {
 		printf("Error: el numero de hilos debe ser mayor que cero.\n");
 		return 1;
 	}
 
-	if ( (Nnumeros = addInt(introduceNnumeros) ) <= 0) {
+	if ( (Nnumeros = atoi(argv[2]) ) <= 0) {
 		printf("Error: la cantidad de numeros para analizar debe ser mayor que cero.\n");
 		return 1;
 	}
 
-	if ( (Tambuffer = addInt(introduceTamBuffer) ) <= 0) {
+	if ( (Tambuffer = atoi(argv[3]) ) <= 0) {
 		printf("Error el tamano del buffer debe ser mayor que cero.\n");
 		return 1;
 	}
 
 	if (Tambuffer > (Nnumeros / 2)){
-		printf("Error: el tamano del buffer es demasiado pequeno.\n");
+		printf("Error: el tamano del buffer es demasiado grande.\n");
 		return 1;
 
 	}

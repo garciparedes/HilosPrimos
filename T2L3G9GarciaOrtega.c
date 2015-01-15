@@ -33,7 +33,7 @@ int esPrimo(int num){
         	}
     	}
   	if ( i > sq )  
-    	return  1;
+    		return  1;
 }
 //Función que añade un número al buffer, asegurándose previamente la exclusión mutua.
 void meteNumero(int value){

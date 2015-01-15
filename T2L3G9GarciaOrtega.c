@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <math.h>
 #include <semaphore.h>
 #include <pthread.h>
 #include <string.h>
@@ -23,18 +23,17 @@ int in = 0;
 int out = 0;
 
 
-int esPrimo(int n){
-	int a = 0, i;
-	for( i = 1; i < (n + 1); i++){  
-		if(n % i == 0){  
-			a++;  
-		}  
-	}  
-	if(a != 2){  
-		return 0;  
-	}else{  
-		return 1;
-	}  
+int esPrimo(int num){
+	int i ;
+    int sq = ( int ) sqrt ( num );
+
+   for (i = 2 ; i <= sq ; i++ ) {
+        if ( num % i == 0 ) { 
+             return 0;
+        }
+    }
+  	if ( i > sq )  
+    	return  1;
 }
 
 void meteNumero(int value){

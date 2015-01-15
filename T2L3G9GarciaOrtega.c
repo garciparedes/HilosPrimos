@@ -25,13 +25,13 @@ int out = 0;
 //Cálculo de la primalidad del número generado.
 int esPrimo(int num){
 	int i ;
-    int sq = ( int ) sqrt ( num );
-
-   for (i = 2 ; i <= sq ; i++ ) {
-        if ( num % i == 0 ) { 
-             return 0;
-        }
-    }
+	int sq = ( int ) sqrt ( num );
+	
+	for (i = 2 ; i <= sq ; i++ ) {
+		if ( num % i == 0 ) { 
+        		return 0;
+        	}
+    	}
   	if ( i > sq )  
     	return  1;
 }

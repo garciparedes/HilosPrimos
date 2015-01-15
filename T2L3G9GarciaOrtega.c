@@ -29,11 +29,10 @@ int esPrimo(int num){
 	
 	for (i = 2 ; i <= sq ; i++ ) {
 		if ( num % i == 0 ) { 
-        		return 0;
-        	}
+    		return 0;
     	}
-  	if ( i > sq )  
-    		return  1;
+	}
+    return  1;
 }
 //Función que añade un número al buffer, asegurándose previamente la exclusión mutua.
 void meteNumero(int value){

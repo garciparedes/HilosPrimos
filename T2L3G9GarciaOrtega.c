@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+
 #include <semaphore.h>
 #include <pthread.h>
 #include <string.h>
@@ -25,7 +25,7 @@ int out = 0;
 
 int esPrimo(int n){
 	int a = 0, i;
-	for( i = 1; i <= sqrt(n); i++){  
+	for( i = 1; i < (n + 1); i++){  
 		if(n % i == 0){  
 			a++;  
 		}  

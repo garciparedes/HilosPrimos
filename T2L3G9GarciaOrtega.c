@@ -1,3 +1,6 @@
+/* Sergio Garcia Prado */
+/* Roberto Ortega Sanchez */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
